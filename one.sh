@@ -24,8 +24,6 @@ check_domain(){
     yellow " 请输入绑定到本VPS的域名"
     green "================================="
     read your_domain
-    real_addr=`getent hosts ${your_domain} | cut -d' ' -f1`
-    local_addr=`curl ip.sb`
     green "================================="
     green "  域名解析正常，开始安装爬虫"
     green "================================="
