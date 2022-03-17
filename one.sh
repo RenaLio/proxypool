@@ -24,20 +24,29 @@ check_domain(){
     yellow " 请输入绑定到本VPS的域名"
     green "================================="
     read your_domain
-    green "================================="
-    green "  域名解析正常，开始安装爬虫"
-    green "================================="
-    sleep 1s
-    yellow "是否需要关闭防火墙? （如果不确认请选择y）y/n "
-    read firewall_choice
-    if [ $firewall_choice == y ] ; then
-         firewall_config
+    real_addr=`getent hosts ${your_domain} | cut -d' ' -f1`
+    local_addr=`curl ip.sb`
+    if [ $real_addr == $local_addr ] ; then
+        green "================================="
+        green "  域名解析正常，开始安装爬虫"
+        green "================================="
+        sleep 1s
+        yellow "是否需要关闭防火墙? （如果不确认请选择y）y/n "
+        read firewall_choice
+        if [ $firewall_choice == y ] ; then
+          firewall_config
+        fi
+        download_pc
+        install_socat
+        install_nginx
+        config_ssl
+    else
+        red "====================================="
+        red "    域名解析地址与本VPS IP地址不一致"
+        yellow "  如果你开启了CDN，请先关闭CDN重试"
+        red "====================================="
+        exit 1
     fi
-    download_pc
-    install_socat
-    install_nginx
-    config_ssl
-    
 }
 
 firewall_config(){
